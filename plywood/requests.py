@@ -122,9 +122,9 @@ class CookiedRequest(WSGIRequest):
         cookies = self.allCookies()
         return cookies.has_key(key)
         
-    def getCookie(self, key):
+    def getCookie(self, key, default=None):
         cookies = self.allCookies()
-        return cookies.get(key)
+        return cookies.get(key, default)
         
         
             

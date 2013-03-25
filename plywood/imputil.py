@@ -10,6 +10,7 @@ def import_entity( name ):
     method = name.split('.')[-1]
     
     m = __import__( module )
+    
     if hasattr(m, method):
         return getattr(m, method)
     

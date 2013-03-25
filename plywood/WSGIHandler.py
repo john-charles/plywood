@@ -1,11 +1,12 @@
 from requests import Request
+from response import Response
 from URLDispatcher import URLDispatcher
 from exceptions import ServerException, Server500Exception
 
 class WSGIHandler:
     
-    def __init__( self, urllist ):    
-        self.urldispatcher = URLDispatcher( urllist )
+    def __init__(self, urllist, middleware=tuple()):    
+        self.urldispatcher = URLDispatcher(urllist, middleware=middleware)
         
     
     def __call__( self, environ, response_callback ):
@@ -14,28 +15,29 @@ class WSGIHandler:
         
         try:
             
-            response = self.urldispatcher.call( request.getPathInfo()[1:], request )
-                       
-            if not response: response = ""
-            status = "200 OK"
-            response_headers = [
-                ('Content-Type', 'text/html'),
-                ('Content-Length', str(len(response)))
-            ]
+            response = self.urldispatcher.call(request.getPathInfo()[1:], request)
+            
+            if isinstance(response, Response):
+                status = response.status
+                response_headers = response.getHeaders()
+                
+            else:
+                raise Exception("View failed to resturn a valid Response object.")
             
         except ServerException, e:
-            response = e.toHtml().strip()
+            response = Response(e.toHtml().strip(), request)
             
             status = e.getStatus()
             response_headers = [
                 ('Content-Type', 'text/html'),
                 ('Content-Length', str(len(response)))
             ]
+            
         except Exception, e:
             
-            e = Server500Exception(e.message, request.getPathInfo() )
+            e = Server500Exception(e.message, request.getPathInfo())
             
-            response = e.toHtml().strip()
+            response = Response(e.toHtml().strip(), request)
             
             status = e.getStatus()
             response_headers = [
@@ -47,5 +49,6 @@ class WSGIHandler:
             
             
         response_callback(status, response_headers)
-        return [ response ]
+        return response.getIterator()
+
         

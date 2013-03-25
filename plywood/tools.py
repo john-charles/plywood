@@ -4,6 +4,7 @@ from imputil import import_entity
 def url( pattern, call, **kwargs ):   
     if isinstance( call, str ):
         call = import_entity(call)
+        
     
     if not callable(call):
         if not isinstance( call, tuple ):
