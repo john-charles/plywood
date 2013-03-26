@@ -5,8 +5,9 @@ class Response:
     status = "200 OK"
     cookies = None
     
-    def __init__(self, html, request=None):        
-        self.html = html
+    def __init__(self, html, request=None): 
+        
+        self.html = str(html)
         self.request = request
         self.cookies = dict()
         
@@ -40,5 +41,22 @@ class Response:
             default.append(('Set-Cookie','%s=%s;' % (name, value)))
             
         return default
+    
+class ResponseRedirect(Response):
+    
+    def __init__(self, url, request):
+        self.url = url
+        self.request = request
+        self.status = "303 See Other"
+        self.cookies = dict()
+        
+    def getHeaders(self):
+        
+        return [
+            ('Location', self.url)
+        ]
+        
+    def getIterator(self):
+        return []
                 
             

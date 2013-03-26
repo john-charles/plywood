@@ -216,6 +216,9 @@ class SubmissionRequest(CookiedRequest):
         request = self.getQuery()
         request.update( self.getPost() )
         return request
+    
+    def defaultContext(self):        
+        return {'csrf_token' : self.getCSRFTokenField()}
         
         
 class Request(SubmissionRequest):
