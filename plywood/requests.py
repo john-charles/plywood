@@ -217,8 +217,11 @@ class SubmissionRequest(CookiedRequest):
         request.update( self.getPost() )
         return request
     
-    def defaultContext(self):        
-        return {'csrf_token' : self.getCSRFTokenField()}
+    def defaultContext(self, local=None):
+        if not local:
+            local = dict()
+        local.update({'csrf_token' : self.getCSRFTokenField()})
+        return local
         
         
 class Request(SubmissionRequest):

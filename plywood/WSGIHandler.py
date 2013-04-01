@@ -1,12 +1,13 @@
 from requests import Request
-from response import Response
 from URLDispatcher import URLDispatcher
+from response import Response, ResponseRedirect
 from exceptions import ServerException, Server500Exception
 
 class WSGIHandler:
     
-    def __init__(self, urllist, middleware=tuple()):    
+    def __init__(self, urllist, middleware=tuple(), forbidden_redirect=None):    
         self.urldispatcher = URLDispatcher(urllist, middleware=middleware)
+        self.forbidden_redirect = forbidden_redirect
         
     
     def __call__( self, environ, response_callback ):
