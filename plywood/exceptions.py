@@ -1,6 +1,5 @@
 import traceback
 
-
 exception_html = """
 <!DOCTYPE html>
 <html>
@@ -41,17 +40,15 @@ class ServerException(Exception):
 class Server404Exception(ServerException):
     
     def __init__(self, mesg, path):
-        ServerException.__init__(self,mesg,path,'404 Page Not Found','404 Error')
-    
-    
+        ServerException.__init__(self, mesg, path, '404 Page Not Found', '404 Error')
         
 class Server403Exception(ServerException):
     
     def __init__(self, mesg, path):
-        ServerException.__init__(self,mesg,path,'403 Forbidden','403 Error')
+        ServerException.__init__(self, mesg, path, '403 Forbidden', '403 Error')
         
 class Server500Exception(ServerException):
     
     def __init__(self, mesg, path):
-        ServerException.__init__(self,mesg,path,'500 Internal Error','500 Error')
+        ServerException.__init__(self, mesg, path, '500 Internal Error', '500 Error')
     

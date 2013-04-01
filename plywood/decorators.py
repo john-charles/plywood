@@ -1,7 +1,6 @@
 from response import ResponseRedirect
 from exceptions import Server403Exception
 
-
 def view(auth_method=None):    
 
     class View:

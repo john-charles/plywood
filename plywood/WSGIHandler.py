@@ -1,55 +1,31 @@
-from requests import Request
+from requests import Request, ServerErrorResponse
 from URLDispatcher import URLDispatcher
 from response import Response, ResponseRedirect
 from exceptions import ServerException, Server500Exception
 
 class WSGIHandler:
     
-    def __init__(self, urllist, middleware=tuple(), forbidden_redirect=None):    
+    def __init__(self, urllist, middleware=tuple(), error_redirects={}):    
         self.urldispatcher = URLDispatcher(urllist, middleware=middleware)
-        self.forbidden_redirect = forbidden_redirect
-        
+        self.error_redirects = error_redirects       
     
-    def __call__( self, environ, response_callback ):
+    def __call__(self, environ, response_callback):        
+        request = Request(environ)
         
-        request = Request( environ )
-        
-        try:
-            
-            response = self.urldispatcher.call(request.getPathInfo()[1:], request)
-            
-            if isinstance(response, Response):
-                status = response.status
-                response_headers = response.getHeaders()
-                
-            else:
-                raise Exception("View failed to resturn a valid Response object.")
-            
+        try:            
+            path = request.getPathInfo()[1:]
+            response = self.urldispatcher.call(path, request)
+
         except ServerException, e:
-            response = Response(e.toHtml().strip(), request)
-            
-            status = e.getStatus()
-            response_headers = [
-                ('Content-Type', 'text/html'),
-                ('Content-Length', str(len(response)))
-            ]
+            response = PageResponse(e.toHtml().strip(), request)
             
         except Exception, e:
             
             e = Server500Exception(e.message, request.getPathInfo())
-            
             response = Response(e.toHtml().strip(), request)
             
-            status = e.getStatus()
-            response_headers = [
-                ('Content-Type', 'text/html'),
-                ('Content-Length', str(len(response)))
-            ]
         
-            
-            
-            
-        response_callback(status, response_headers)
-        return response.getIterator()
+        response_callback(response.GetStatus(), response.GetHeaders())
+        return response.GetBody()
 
         
