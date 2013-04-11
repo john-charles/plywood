@@ -26,3 +26,9 @@ class TextareaWidget(Widget):
         if not value:
             value = ""
         return """<textarea id="%s" name="%s">%s</textarea>""" % (name, name, value)
+    
+class SelectDateWidget(Widget):
+    
+    def render(self, name, value):
+        w = list()
+        w.append('<select name="%s">')

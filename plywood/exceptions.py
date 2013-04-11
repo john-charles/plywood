@@ -6,13 +6,15 @@ exception_html = """
     <head>
         <title>%(reason)s!</title>
     </head>
-    <body>
-        <h1>%(reason)s!</h1>
-        URL: "%(path)s" is inaccessable!<br>
-        please contact the server administrator for help!<br>
-        %(message)s<br>
-        <br>
-        %(traceback)s<br>
+    <body style="padding:0px;margin:0px;">
+        <h1 style="padding:15px;margin:0px;">%(reason)s!</h1>
+        <p style="margin:10px;">
+            URL: "%(path)s" is inaccessable!<br>
+            please contact the server administrator for help!<br>
+            %(message)s<br>
+            <br>
+            %(traceback)s<br>
+        </p>
     </body>
 </html>
 """
@@ -25,10 +27,10 @@ class ServerException(Exception):
         self.reason = reason
         self.status = status
         
-    def getStatus(self):
+    def GetStatus(self):
         return self.status
         
-    def toHtml(self):
+    def ToHTML(self):
         
         return exception_html % {
             'reason':self.reason,
