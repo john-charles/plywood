@@ -1,0 +1,57 @@
+This file is part of plywood.
+    
+    Copyright 2013 John-Charles D. Sokolow - <john.charles.sokolow@gmail.com>
+
+    plywood is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    plywood is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with plywood.  If not, see <http://www.gnu.org/licenses/>.
+    
+    
+What is 'plywood'?
+    
+    plywood is a minimalist web framework written in python. Its goal is to
+    provide an abstraction over the WSGI interface specification and limited
+    other web tools. It is deliberatly designed to not include any database
+    or template rendering code. plywood let's you handle web requests, both
+    post and get, upload and stream files and provides basic csrf protections.
+    
+Why did I create 'plywood'?
+    
+    I created plywood because I was becoming tired of Django and its
+    monolithic nature. I wanted to use sql alchemy or other ORM solutions
+    for my databse managment and I wanted to use Jinja2 or other template
+    languages for rendering my html. This left me with still needing to use
+    Django, and install all of it's dependencies.
+    
+    The goal of plywood is to mimic parts of django where they pretain to
+    request handling but not restrict the user to any particular template
+    engine or ORM. As this library developed it was also influenced by some
+    of the concepts found in other frameworks which handle forms.
+    
+Why should I use 'plywood'?
+    
+    Plywood is a full featured WSGI abstraction. It is also pure python
+    and has no dependencies outside of the python standard library. Plywood
+    is exceptionally lightweight and very small with an install footprint of
+    less than 120KB. Plywood is also fast as I developed it on an old laptop
+    and spent lots of time figuring out what seemed to waste time and make a
+    cleaner version of that. 
+    
+How do I use 'plywood'?
+    
+    A simple implementation of a plywood site comes with this package.
+    The files example.py and example_views.py are a working standalone
+    test website which should be enough to get you started.
+    
+How do I submit a bug?
+    
+    Please email me at john.charles.sokolow@gmail.com, or use github!
