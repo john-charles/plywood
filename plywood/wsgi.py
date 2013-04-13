@@ -94,6 +94,9 @@ class WSGIHandler:
             
             e = Server500Exception(e.message, request.path_info)
             response = ServerErrorResponse(request, e)
+            if self.options.get('print_exceptions', False):
+                print response.exception.traceback_text
+                
         
         response_callback(response.GetStatus(), response.GetHeaders())
         return response.GetBody()

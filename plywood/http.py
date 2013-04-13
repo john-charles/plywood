@@ -156,7 +156,8 @@ class Request:
     def post(self):
         
         if self.is_post:
-            post_data = self.__loadreader()            
+            post_data = self.__loadreader()
+            
             if post_data['csrf_token'] != self.csrf_token:
                 raise Server403Exception("Invalid CSRF Token", self.path_info)
             
@@ -203,6 +204,10 @@ class Request:
     @property
     def server_protocal(self):
         return self.environ.get("SERVER_PROTOCOL","")
+    
+    def __del__(self):
+        if self.__content_read:
+            del self.__reader_result
     
     
 class Response:

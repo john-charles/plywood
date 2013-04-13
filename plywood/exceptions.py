@@ -32,11 +32,13 @@ class ServerException(Exception):
         
     def ToHTML(self):
         
+        self.traceback_text = traceback.format_exc()
+        
         return exception_html % {
             'reason':self.reason,
             'path':self.path,
             'message':self.message,
-            'traceback': traceback.format_exc().replace('\n','<br>\n').replace('  ','&nbsp;'* 4)
+            'traceback': self.traceback_text.replace('\n','<br>\n').replace('  ','&nbsp;'* 4)
         }
 
 class Server404Exception(ServerException):
