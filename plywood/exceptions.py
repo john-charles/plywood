@@ -49,6 +49,11 @@ class Server403Exception(ServerException):
     def __init__(self, mesg, path):
         ServerException.__init__(self, mesg, path, '403 Forbidden', '403 Error')
         
+class Server413Exception(ServerException):
+    
+    def __init__(self, mesg, path):
+        ServerException.__init__(self, mesg, path, '413 Request Entity Too Large','413 Request Entity Too Large')
+        
 class Server500Exception(ServerException):
     
     def __init__(self, mesg, path):

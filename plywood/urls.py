@@ -66,7 +66,7 @@ class URLDispatcher:
         if urllist == None: urllist = self.urllist        
         for pattern, call, kwargs in urllist:
             
-            m = pattern.match( path )
+            m = pattern.match(path)
             if m:
                 
                 kwargs = kwargs.copy()
@@ -104,5 +104,5 @@ class URLDispatcher:
                 else:
                     raise Server500Exception('The "call" is not callable!','Yeiks')
         
-        raise Server404Exception("Could not find path!", environ.getPathInfo() )
+        raise Server404Exception("Could not find path!", environ.path_info)
     

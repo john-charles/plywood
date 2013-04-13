@@ -29,6 +29,10 @@ class TextareaWidget(Widget):
     
 class SelectDateWidget(Widget):
     
+    date_min = None
+    date_max = None
+    
     def render(self, name, value):
+        
         w = list()
         w.append('<select name="%s">')

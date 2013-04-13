@@ -29,8 +29,8 @@ class DateField(Field):
     
     def __init__(self, default=None, widget=None, required=True, date_min=None, date_max=None):
         Field.__init__(self, default, widget, required)
-        self.date_min = date_min
-        self.date_max = date_max
+        self.date_min = self.widget.date_min = date_min
+        self.date_max = self.widget.date_max = date_max
         
     def validate(self, data):
         Field.validate(self, data)
@@ -40,7 +40,7 @@ class DateField(Field):
         
         if isinstance(data, list):
             if len(data) != 3:
-                self.error = "Hmmm, this is strange, bad date!"
+                self.error = "Need year month day, got something else!"
                 raise ValueError(self.error)
             
             year, month, day = data
@@ -54,9 +54,8 @@ class DateField(Field):
             
             self.value = date
             
-        else:
-            
-            pass
+        else:            
+            raise NotImplemented()
             
             
             

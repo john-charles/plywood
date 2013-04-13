@@ -1,23 +1,18 @@
 __all__ = ['dev_server','static_files']
 
+import hashlib
 from os.path import join, exists
-from response import StreamResponse
 from exceptions import Server404Exception
 
+def quick_hash( *args ):
 
-class SimpleFile:
-    
-    def __init__(self, file):
-        self.file = open(file, "rb")
-        
-    def __iter__(self):
-        
-        while True:
-            block = self.file.read(4096)
-            if not block: break
-            yield block
-        
-        self.file.close()
+    sha = hashlib.sha256()
+
+    for arg in args:
+        sha.update(str(arg))
+
+    return sha.hexdigest()
+
         
 def dev_server(application, bindhost='localhost', bindport=8051):
     
@@ -36,17 +31,5 @@ def dev_server(application, bindhost='localhost', bindport=8051):
         
         
 
-def static_files(request, path, directory_list):
-    
-    if isinstance(directory_list, str):
-        directory_list = list([directory_list])
-    
-    for directory in directory_list:
-        
-        file_path = join(directory, path)
-        if exists(file_path):
-            return StreamResponse(request, SimpleFile(file_path))
-    
-    pathinfo = repr(directory_list) + " " + path
-    raise Server404Exception("Could not find static file", pathinfo)
+
             

@@ -7,22 +7,15 @@ __all__ = ['Request','Response']
                                     
 """
 
-import json, hashlib
-
+import json
+from cookies import CookieList
 from Cookie import SimpleCookie
 from urlparse import parse_qsl, urlparse
 
 # Local imports
 from query import Query
-
-def quick_hash( *args ):
-
-    sha = hashlib.sha256()
-
-    for arg in args:
-        sha.update(str(arg))
-
-    return sha.hexdigest()
+from utils import quick_hash
+from exceptions import Server403Exception
 
 class Request:
     
@@ -31,7 +24,7 @@ class Request:
         self.__content_read = 0
         self.__headers = self.__process_headers()
         self.__cookies = self.__process_cookies()
-        self.__secret_key = environ['secret_key']
+        self.__secret_key = environ['options']['secret_key']
         
     def __process_headers(self):
         headers = dict()
@@ -45,7 +38,7 @@ class Request:
         return headers
     
     def __process_cookies(self):
-        simple_cookie = SimpleCookie(self.headers["Cookie"])
+        simple_cookie = SimpleCookie(self.headers.get("Cookie",{}))
         cookies = dict()
         
         for cookie in simple_cookie.itervalues():            
@@ -83,7 +76,7 @@ class Request:
             # user, since the netloc of host should
             # be the netloc of the referer or origin
             # headers of the post request.
-            if self.is_get():
+            if self.is_get:
                 origin = self.headers["Host"]
             # Else we just grab the netloc of the origin
             # or referer header.
@@ -129,11 +122,11 @@ class Request:
     def path_info(self):
         return self.environ.get("PATH_INFO","")
     
-    def _reader(self, length=None):
+    def __reader(self, length=None):
         
         if length == None: length = self.content_length
         
-        max_length = self.content_length()
+        max_length = self.content_length
         max_left = max_length - self.__content_read
         
         if max_left > 0:
@@ -147,17 +140,25 @@ class Request:
             self.__content_read = self.__content_read + actual_read
             return buff
         else:
-            return ''
-    
+            return ''        
+        
+    def __loadreader(self):
+        # For some reason this is getting called
+        # multiple times and it ends up returning
+        # and empty query after the first call.
+        if self.__content_read == 0:
+            self.__reader_result = Query(self.__reader,
+                self.content_type, self.content_length)
+            
+        return self.__reader_result
+        
     @property
     def post(self):
         
-        if is_post():            
-            post_data = Query(self._reader())            
-            csrf_token = post_data['csrf_token']
-            
-            if csrf_token != self.csrf_token:
-                raise Server403Exception("Invalid CSRF Token")
+        if self.is_post:
+            post_data = self.__loadreader()            
+            if post_data['csrf_token'] != self.csrf_token:
+                raise Server403Exception("Invalid CSRF Token", self.path_info)
             
             return post_data
         
@@ -207,19 +208,17 @@ class Request:
 class Response:
     
     def __init__(self, request):
-        self.cookies = dict()
+        self.__cookies = CookieList()
         self.headers = dict()
         self.request = request
     
-    def SetCookie(self, name, value, domain=None, path=None, expires=None, secure=False, httponly=True):
-        self.cookies[name] = (value,
-            {'domain' : domain, 'path' : path, 'expires' : expires, 'secure' : secure, 'httponly' : httponly})
-            
-    def GetCookie(self, name):
-        return self.cookies[name]
+    @property
+    def cookies(self):
+        return self.__cookies
     
-    def Cookies(self):
-        return self.cookies.keys()
+    def set_cookie(self, name, value, domain=None, path=None, expires=None, secure=False, httponly=True):
+        self.cookies.set_cookie(name, value, path, "", domain, expires, secure, None, httponly)
+    
     
     def SetHeader(self, name, value):
         self.headers[name] = value
@@ -233,22 +232,10 @@ class Response:
     
     def GetHeaders(self):
         
-        cookie_list = list()        
-        
-        for name in self.Cookies():
-            value, attrs = self.GetCookie(name)
-            
-            attr_list = list()
-            attr_list.append(("=".join((name, value))))
-            
-            #for attr_name, attr_val in attrs.iteritems():
-                #if attr_val:
-                    #attr_list.append("=".join((attr_name, str(attr_val))))
-            
-            cookie_list.append("; ".join(attr_list))
-        
         headers = [(name, value) for name, value in self.headers.iteritems()]
-        headers.extend([('Set-Cookie', cookie) for cookie in cookie_list])      
+        headers.extend([('Set-Cookie', cookie.OutputString()) for cookie in self.cookies])
+        
+        #print headers
         
         return headers
     

@@ -23,7 +23,7 @@ Usage:
         
 
 """
-from http import Request
+from plywood.http import Request
 from fields import Field
 
 class FormMeta(type):

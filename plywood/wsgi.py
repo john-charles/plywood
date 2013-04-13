@@ -1,21 +1,27 @@
 from exceptions import *
 from urls import URLDispatcher
 from imputil import import_entity
-from http import Response, ServerErrorResponse, LinkResponse
+from http import Request, Response, ServerErrorResponse, LinkResponse
 
 class WSGIHandler:
     
     def __init__(self, urllist, wrappers=None, options={}):    
         self.urldispatcher = URLDispatcher(urllist)
-        self.middleware = self.__init_middlware(wrappers)
         self.options = options
+        self.middleware = self.__init_middlware(wrappers)
+        
         
     def __init_middlware(self, wrappers):
         
         middleware = list()
         for wrapper, wopts in wrappers:
-            options = wrappers.defaul_options.copy()
+            
+            options = self.options.copy()
+            options.update(wrappers.default_options)
             options.update(wopts)
+            
+            if isinstance(wrapper, str):
+                wrapper = import_entity(wrapper)
             middleware.append(wrapper(options))
         
         return middleware
@@ -44,14 +50,11 @@ class WSGIHandler:
         
         while len(called_middleware) > 0:
             middleware = called_middleware.pop()
+            middleware.response(response)
             
-            try:
-                middleware.response(response)
-            except NotImplemented:
-                pass
-    
     def __call__(self, environ, response_callback):        
         # Turn the environment object into an actual request object.
+        environ['options'] = self.options
         request = Request(environ)
         
         try:
@@ -68,7 +71,6 @@ class WSGIHandler:
                 response = self.urldispatcher.call(request.path_info[1:], request)
                 
                 if not isinstance(response, Response):
-                    if not path: path = "/"
                     raise Server500Exception(
                         "The view did not return a Response object!",
                         request.path_info
@@ -78,6 +80,8 @@ class WSGIHandler:
                 if 'login_url' in self.options:
                     response = LinkResponse(request, self.options['login_url'],
                         query={'next': request.path_info})
+                else:
+                    response = ServerErrorResponse(request, e)
 
             except ServerException, e:
                 response = ServerErrorResponse(request, e)

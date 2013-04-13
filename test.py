@@ -24,7 +24,8 @@ def simple_app(environ, start_response):
     ret.append("<html><body>")
     ret.append('<a href=".">This page</a>')
     
-    ret.append('<form method="POST" action=".">')
+    ret.append('<form method="POST" action="." enctype="multipart/form-data">')
+    ret.append('<input type="file" name="my_file">')
     ret.append('<input type="text" name="age">')
     ret.append('<input type="text" name="age">')
     ret.append('<input type="text" name="age">')
