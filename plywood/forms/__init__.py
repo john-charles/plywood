@@ -39,12 +39,48 @@ Usage:
                 handle_errors()
                 
             return self.response
+            
+How do I implement this.
+
+1. Get:
+- Request comes into a form.
+- Call on_load, let the user load the
+    data on the form.
+    Should this only be called on "GET" requests?
+- Save each form field to the session.
+- Render the form.
+
+2. Post:
+- Request comes into a from. This is passing a request instead of a dict.
+- Iterate over the fields.
+    1. Validate the field.
+    4. If the field failed to validate:
+        - set the fields error appropriately.
+        - fire the on_error event.
+        - set the field value to the copy stored in the session.
+        
+- If the entire form is valid:
+    - Check each field against the value saved in the session.
+    - If the are different fire the on changed event.
+    - fire the on_valid event (Do this now so that we have an oppertunity to do whatever in the various on_change events.)
+- Save each form filed to the session.
+- Render the form.
+
+Django Style:
+- Form is created with a dictionary of values.
+- Do the 'Iterate over fields' part of the Post request above.
+- except, if the field is invalid set it to the default.
+- If the entire form is valid:
+    - Set a flag 'is_valid'
+    
     
         
 
 """
-from plywood.http import Request
 from fields import Field
+from plywood.event import Event
+from plywood.http import Request, LinkResponse
+
 
 class FormMeta(type):
     
@@ -62,80 +98,140 @@ class FormMeta(type):
         return type.__new__(cls, name, bases, dct)
 
 class Form:
-    
-    __meta__ = {}
+
     __metaclass__ = FormMeta
     
-    __has_error = 0
+    # If this is set to false values will
+    # not be saved to the session and the
+    # on_change event will never be fired.
+    watch_changes = True
+    __redirect = None
     
+    def __call__(self, **kwargs):
+        
+        if self.request.is_post:
+            if self.is_valid:
+                if self.watch_changes:
+                    self.__change()
+                self.on_valid()
+        
+        # If were watching changes we always
+        # save our fields, if it's a post or not!
+        if self.watch_changes:
+            self.__save_fields()
+        
+        if isinstance(self.__redirect, LinkResponse):
+            return self.__redirect
+        return self.render()
+    
+    def __change(self):
+        """ 
+        Check if the user submitted data is different
+        than the session stored data and fire change 
+        events on fields that have changed.
+        """
+        for name, field in self.__iter_fields():
+            name = self.__sf_name(name)
+            if name in self.session:
+                if self.session[name] != field.value:
+                    field.on_change()
+            
+                
+                
+    def __save_fields(self):
+        """
+        Save any data currently in the fields to
+        the user's session so that it can be checked
+        on the next post.
+        """
+        for name, field in self.__iter_fields():
+            name = self.__sf_name(name)
+            if not field.error:
+                self.session[name] = field.value
+        
+        self.request.session[form_name] = session_dict
+        
+    
+    def __init__(self, req_or_dict):
+        self.__c_errors = -1
+        # We use -1 so that if the form is never
+        # validated 'is_valid' will fail.
+        
+        if isinstance(req_or_dict, Request):
+            self.__init_request(req_or_dict)
+        elif isinstance(req_or_dict, dict):
+            self.__init_dict(req_or_dict)
+        else:
+            types = (Request, dict, type(req_or_dict))
+            raise ValueError("Expected %s or %s, got %s" % types)
+        
+    def __init_dict(self, post_data):
+        self.__validate(post_data)
+        
+    def __init_request(self, request):
+        self.request = request
+        self.session = request.session
+                
+        # Set these up here, then call the public
+        # 'init' method for the user to load the handlers.
+        self.on_load = Event()
+        self.on_valid = Event()
+        self.init()
+        
+        if request.is_get:
+            self.on_load()
+        elif request.is_post:
+            self.__validate(request.post)
+            
+    def __iter_fields(self):
+        for name in dir(self):
+            attr = getattr(self, name)
+            if isinstance(attr, Field):
+                yield name, attr                
+    
+    def __sf_name(self, key_name):
+        form_name = self.__class__.__name__
+        return "%s_%s" % (form_name, key_name)
+    
+    def __validate(self, post_data):
+        c_errors = 0
+        for name, attr in self.__iter_fields():
+            try: attr.validate(post_data.get(name, None))
+            except ValueError, e:
+                attr.on_error(e)
+                c_errors += 1
+        
+        # If no errors this will overright the -1 to validate
+        # the form's data.
+        self.__c_errors = c_errors
+        
+    def clear_saved(self):
+        """
+        Let the user delete all fields saved in the
+        session. This will prevent any on_change events
+        from being fired.
+        """
+        for name, attr in self.__iter_fields():
+            sf_name = self.__sf_name(name)
+            if sf_name in self.session:
+                del self.session[sf_name]
+        
+        
+    def init(self):
+        pass
+                
     @property
     def is_valid(self):
-        return self.__has_error == 0
+        """If we have no errors then the form is valid."""
+        return self.__c_errors == 0
     
-    def __init__(self, post_data={}):
-        self.__is_valid = 0
+    def redirect(self, url, query={}, fragment=None):
+        self.__redirect = LinkResponse(self.request, url, query, fragment)
         
-        if isinstance(post_data, Request):
-            self.__request = post_data
-            self.request = property(self.__p_request)
-            
-        elif isinstance(post_data, dict):
-            self.validate(post_data)
-        
-    def validate(self, post_data):
-        
-        def validate(name, field):
-            
-            try:
-                field.validate(post_data.get(name, None))
-            except ValueError:
-                self.__has_error += 1
-        
-        for field_name in dir(self):
-            
-            attr = getattr(self, field_name)            
-            if isinstance(attr, Field):
-                validate(field_name, attr)                    
-        
-        
-    def __getitem__(self, name):
-        if hasattr(self, name):
-            attr = getattr(self, name)
-            if isinstance(attr, Field):
-                return attr.value
     
-        raise KeyError("'%s' does not exist or is not a FormField" % name)
-    
-    def __setitem__(self, name, value):
-        if hasattr(self, name):
-            attr = getattr(self, name)
-            if isinstance(attr, Field):
-                attr.value = value
-                return
-        
-        raise KeyError("'%s' does not exist or is not a FormField" % name)
-            
-        
-        
-    def __str__(self):
-        
-        text = str()
-        
-        for field_name in dir(self):
-            attr = getattr(self, field_name)
-            if isinstance(attr, BaseField):
-                errors = attr.errors()
-                if errors:
-                    text = text + "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (
-                        attr.get_label(), attr.render(), errors)
-                else:
-                    text = text + "<tr><td>%s</td><td>%s</td></tr>" % (
-                        attr.get_label(), attr.render())
+    def render(self):
+        pass
                     
-        return text
-                
-
         
-                
-                
-                
+    
+    

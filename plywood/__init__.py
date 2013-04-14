@@ -18,6 +18,7 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
+__version__ = "1.0 RC 1"
     
     
     

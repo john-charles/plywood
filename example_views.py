@@ -92,5 +92,9 @@ class Upload(View):
         ''' % self.request.csrf_token
         
         return PageResponse(self.request, PAGE % {'body':page})
+    
+class Username(Form):
+    
+    
         
         

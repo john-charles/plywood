@@ -18,6 +18,8 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
+from plywood.kinds import *
+from plywood.event import Event
 from widgets import TextWidget
 from datetime import date, datetime
 
@@ -37,8 +39,11 @@ class Field:
         if default: self.default = default
         if not required: self.required = False
         
-    def validate(self, data):
-        if not data and self.required:
+        self.on_error = Event()
+        self.on_change = Event()
+        
+    def validate(self, d_data):
+        if not d_data and self.required:
             self.error = "This field is required!"
             raise ValueError()
     
@@ -75,7 +80,7 @@ class DateField(Field):
             self.value = date
             
         else:            
-            raise NotImplemented()
+            raise Exception("Not Implemented")
             
             
             
@@ -92,8 +97,21 @@ class FloatField(Field):
         except ValueError, e:
             self.error = "A decimal number is required!"
             raise e
+        
     
+class IntegerField(Field):
     
+    def __init__(self, default=0, widget=None, required=True):
+        Field.__init__(default, widget, required)
+        
+    def validate(self, data):
+        Field.validate(self, data)
+        
+        try: self.value = int(data)
+        except ValueError, e:
+                self.error = "A number is required"
+                raise e
+            
 class StringField(Field):
     
     def __init__(self, default=0, widget=None, required=True, max_length=0):
@@ -108,19 +126,24 @@ class StringField(Field):
             raise ValueError(self.error)
         
         self.value = data
+        
+class SimpleStringField(StringField):
     
-class IntegerField(Field):
-    
-    def __init__(self, default=0, widget=None, required=True):
-        Field.__init__(default, widget, required)
+    def __init__(self, default="", widget=None, required=True, max_length=0):
+        StringField.__init__(self, default, widget, required, max_length)
         
     def validate(self, data):
-        Field.validate(self, data)
+        StringField.validate(self, data)        
+        self.value = ss_from_ds(data)
         
-        try: self.value = int(data)
-        except ValueError, e:
-                self.error = "A number is required"
-                raise e
+class ComplexStringField(StringField):
+    
+    def __init__(self, default="", widget=None, required=True, max_length=0):
+        StringField.__init__(self, default, widget, required, max_length)
+        
+    def validate(self, data):
+        StringField.validate(self, data)
+        self.value = cs_from_ds(data)   
     
         
     

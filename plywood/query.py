@@ -20,6 +20,8 @@ Please see README for usage details.
 """
 __all__ = ['Query']
 import tempfile, string
+
+from kinds import *
 from collections import deque
 from urlparse import parse_qsl
 from exceptions import Server413Exception

@@ -23,6 +23,7 @@ __all__ = ['dev_server','static_files']
 import hashlib
 from os.path import join, exists
 from exceptions import Server404Exception
+from plywood import __version__
 
 def quick_hash( *args ):
 
@@ -40,13 +41,13 @@ def dev_server(application, bindhost='localhost', bindport=8051):
     
     httpd = make_server(bindhost, bindport, application)
     
-    print """Plywood dev_server part of Plywood Copyright (C) 2013  John-Charles D. Sokolow
+    print """Plywood Copyright (C) 2013  John-Charles D. Sokolow
     This program comes with ABSOLUTELY NO WARRANTY; 
     for details see COPYING and COPYING.LESSER distributed
     with this library or visit <http://www.gnu.org/licenses/>
     """
     
-    print "Plywood dev_server. Press 'Ctrl+C' to quit!"
+    print "Plywood version '%s' Press 'Ctrl+C' to quit!" % __version__
     
     try:
         while True:

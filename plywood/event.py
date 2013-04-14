@@ -29,6 +29,14 @@ class Event:
             raise ValueError("Object not callable!")
         self.call_list.append(call)
         return self
+    
+    def __isub__(self, call):
+        try:
+            index = self.call_list.index(call)
+            self.call_list.pop(index)
+        except:
+            pass
+        return self
         
     def __call__(self, *args, **kw):
         for call in self.call_list:
