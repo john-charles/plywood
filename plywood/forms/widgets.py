@@ -18,40 +18,45 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
+
 class Widget:
     
-    def render(self, name, value):
-        return "<!-- BaseWidget: name=%s, value=%s -->" % (name, value)
+    def render(self, form, name, value):
+        return "<!-- BaseWidget: name=%s -->" % name
     
 class TextWidget(Widget):
     
-    def render(self, name, value):
-        return """<input id="%s" type="text" name="%s" value="%s">""" % (name, name, value)
+    def render(self, form, name, value):
+        id = "%s_%s" % (form, name)
+        return """<input id="%s" type="text" name="%s" value="%s">""" % (id, name, value)
     
 class PasswordWidget(Widget):
     
-    def render(self, name, value):
+    def render(self, form, name, value):
+        id = "%s_%s" % (form, name)
         if not value: value = ""
-        return """<input id="%s" type="password" name="%s" value="%s">""" % (name, name, value)
+        return """<input id="%s" type="password" name="%s" value="%s">""" % (id, name, value)
     
 class HiddenWidget(Widget):
     
-    def render(self, name, value):
-        return """<input id="%s" type="hidden" name="%s" value="%s">""" % (name, name, value)
+    def render(self, form, name, value):
+        id = "%s_%s" % (form, name)
+        return """<input id="%s" type="hidden" name="%s" value="%s">""" % (id, name, value)
     
 class TextareaWidget(Widget):
     
-    def render(self, name, value):
+    def render(self, form, name, value):
+        id = "%s_%s" % (form, name)
         if not value:
             value = ""
-        return """<textarea id="%s" name="%s">%s</textarea>""" % (name, name, value)
+        return """<textarea id="%s" name="%s">%s</textarea>""" % (id, name, value)
     
 class SelectDateWidget(Widget):
     
     date_min = None
     date_max = None
     
-    def render(self, name, value):
+    def render(self, form, name, value):
         
         w = list()
         w.append('<select name="%s">')

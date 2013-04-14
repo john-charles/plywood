@@ -82,7 +82,7 @@ class CookieSessionWrapper(Wrapper):
         
     def response(self, response):
         
-        response.set_cookie("session_id", response.request.session.id)
+        response.set_cookie("session_id", response.request.session.id, path='/')
         for morsel in response.request.session.to_cookies():
             response.cookies += morsel
 

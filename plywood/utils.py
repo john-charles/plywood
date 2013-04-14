@@ -47,7 +47,9 @@ def dev_server(application, bindhost='localhost', bindport=8051):
     with this library or visit <http://www.gnu.org/licenses/>
     """
     
-    print "Plywood version '%s' Press 'Ctrl+C' to quit!" % __version__
+    info = (__version__, bindhost, bindport)
+    print "Plywood version '%s' listening on http://%s:%s/" % info
+    print "Press 'Ctrl+C' to quit!" 
     
     try:
         while True:

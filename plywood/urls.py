@@ -102,13 +102,6 @@ class URLDispatcher:
                 elif inspect.isclass(call):
                     
                     call_instance = call(environ)
-                    
-                    # if the call instance is a form we need to first 
-                    # check the request type and if necessary, validate
-                    # the form.
-                    if isinstance(call_instance, Form):
-                        if environ.is_post():
-                            call_instance.validate(environ.post)
                             
                     if isinstance(call_instance, (View, Form)):
                         response = call_instance(**kwargs)

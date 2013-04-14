@@ -21,6 +21,7 @@ Please see README for usage details.
 import shutil
 from plywood.views import View
 from plywood.forms import Form
+from plywood.forms.fields import *
 from plywood.http import PageResponse
 
 PAGE = '''
@@ -60,6 +61,7 @@ class Home(View):
         
         page = '''You've viewed this page %s times!<br>
         <a href="/upload/">Upload a file!</a><br>
+        <a href="/username/">Setup up username</a><br>
         Special value is &quot;%s&quot;''' % (you_views, special)
         
         # The last thing to do in any view is to return a 
@@ -94,6 +96,89 @@ class Upload(View):
         return PageResponse(self.request, PAGE % {'body':page})
     
 class Username(Form):
+    
+    userage  = IntegerField()
+    username = StringField()
+    usermail = StringField()
+    
+    def init(self):
+        """
+        the 'init' method is called by the constructor and
+        let's us set up our event handlers.
+        """
+        self.on_load += self.load_values 
+        self.on_valid += self.store_values
+        self.userage.on_change += self.userage_changed
+        
+    def load_values(self, username=None):
+        """
+        A example of an event handler. This event
+        is called whenever the page is requested
+        via a get, but not via a post.
+        
+        Here we set up some default values.
+        NOTE: the keywords passed in to this
+        method are the ones from the __call__
+        method implemented in forms.Form.
+        """
+        self.userage.value = 55
+        self.username.value = "Johnson"
+        self.usermail.value = "Johnson@johnson.com"
+        
+    def store_values(self):
+        """
+        Handles the even that the from is valid.
+        Here we would save our values to the 
+        database or whatever.
+        
+        In this example we just print them.
+        If we want to clear the form state now
+        is a good time to do it.
+        """
+        print self.userage.value
+        print self.username.value
+        print self.usermail.value
+        
+    def userage_changed(self):
+        """
+        a trivial example of a value.on_change
+        event handler.
+        """
+        print "userage_changed called"
+        self.userage.value = self.userage.value + 100
+        
+    def render(self):
+        
+        page = """
+        <form method="POST" action="/username/">
+            %(csrf_token)s
+            %(userage)s  %(userage_error)s
+            %(username)s %(username_error)s
+            %(usermail)s %(usermail_error)s
+            <input type="submit" name="Update">
+        </form>
+        <a href="/">Back</a>
+        """
+        
+        context = {}
+        context["csrf_token"] = self.request.csrf_token_field
+        context['userage'] = self.userage
+        context['userage_error'] = self.userage.error
+        context['username'] = self.username
+        context['username_error'] = self.username.error
+        context['usermail'] = self.usermail
+        context['usermail_error'] = self.usermail.error
+        
+        page = PAGE % {'body': page % context}
+        return PageResponse(self.request, page)
+    
+    
+
+            
+        
+        
+        
+    
     
     
         

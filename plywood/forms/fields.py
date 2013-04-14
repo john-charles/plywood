@@ -18,6 +18,7 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
+__all__ = ['DateField','FloatField','IntegerField','StringField']
 from plywood.kinds import *
 from plywood.event import Event
 from widgets import TextWidget
@@ -26,7 +27,8 @@ from datetime import date, datetime
 class Field:
     
     default   = None
-    error     = None
+    error     = ''
+    form_name = None
     name      = None
     multipart = False
     required  = True
@@ -47,8 +49,13 @@ class Field:
             self.error = "This field is required!"
             raise ValueError()
     
-    def __str__(self):        
-        return self.widget.render(self.name, self.value)
+    def __str__(self):
+        d_value = self.value if self.value else ''
+        if isinstance(d_value, basestring):
+            hs_value = hs_from_ds(d_value)
+        else:
+            hs_value = str(d_value)
+        return self.widget.render(self.form_name, self.name, hs_value)
     
 class DateField(Field):
     
@@ -102,7 +109,7 @@ class FloatField(Field):
 class IntegerField(Field):
     
     def __init__(self, default=0, widget=None, required=True):
-        Field.__init__(default, widget, required)
+        Field.__init__(self, default, widget, required)
         
     def validate(self, data):
         Field.validate(self, data)
@@ -127,23 +134,7 @@ class StringField(Field):
         
         self.value = data
         
-class SimpleStringField(StringField):
-    
-    def __init__(self, default="", widget=None, required=True, max_length=0):
-        StringField.__init__(self, default, widget, required, max_length)
-        
-    def validate(self, data):
-        StringField.validate(self, data)        
-        self.value = ss_from_ds(data)
-        
-class ComplexStringField(StringField):
-    
-    def __init__(self, default="", widget=None, required=True, max_length=0):
-        StringField.__init__(self, default, widget, required, max_length)
-        
-    def validate(self, data):
-        StringField.validate(self, data)
-        self.value = cs_from_ds(data)   
+
     
         
     

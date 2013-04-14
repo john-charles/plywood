@@ -94,8 +94,9 @@ class FormMeta(type):
         for name in dct.keys():
             if isinstance(dct[name], Field):
                 dct[name].name = name
+                dct[name].form_name = class_name
                 
-        return type.__new__(cls, name, bases, dct)
+        return type.__new__(cls, class_name, bases, dct)
 
 class Form:
 
@@ -108,8 +109,21 @@ class Form:
     __redirect = None
     
     def __call__(self, **kwargs):
+        f_got_name = self.__sf_name("f_got")
+        if self.request.is_get:
+            self.on_load(**kwargs)
+            self.session[f_got_name] = True
         
         if self.request.is_post:
+            # This validates that on change
+            # will be called. Even if the
+            # from is submitted without a get.
+            # That's an odd situation only 
+            # in testing. NOTE: Maybe I should
+            # take this out?
+            if f_got_name not in self.session:
+                self.on_load(**kwarg)
+                
             if self.is_valid:
                 if self.watch_changes:
                     self.__change()
@@ -120,6 +134,7 @@ class Form:
         if self.watch_changes:
             self.__save_fields()
         
+        self.__clear_events()
         if isinstance(self.__redirect, LinkResponse):
             return self.__redirect
         return self.render()
@@ -149,10 +164,8 @@ class Form:
             if not field.error:
                 self.session[name] = field.value
         
-        self.request.session[form_name] = session_dict
-        
     
-    def __init__(self, req_or_dict):
+    def __init__(self, req_or_dict=None):
         self.__c_errors = -1
         # We use -1 so that if the form is never
         # validated 'is_valid' will fail.
@@ -161,7 +174,7 @@ class Form:
             self.__init_request(req_or_dict)
         elif isinstance(req_or_dict, dict):
             self.__init_dict(req_or_dict)
-        else:
+        elif req_or_dict:            
             types = (Request, dict, type(req_or_dict))
             raise ValueError("Expected %s or %s, got %s" % types)
         
@@ -178,9 +191,7 @@ class Form:
         self.on_valid = Event()
         self.init()
         
-        if request.is_get:
-            self.on_load()
-        elif request.is_post:
+        if request.is_post:
             self.__validate(request.post)
             
     def __iter_fields(self):
@@ -191,8 +202,8 @@ class Form:
     
     def __sf_name(self, key_name):
         form_name = self.__class__.__name__
-        return "%s_%s" % (form_name, key_name)
-    
+        return "%s_storedvalue_%s" % (form_name, key_name)
+        
     def __validate(self, post_data):
         c_errors = 0
         for name, attr in self.__iter_fields():
@@ -201,9 +212,15 @@ class Form:
                 attr.on_error(e)
                 c_errors += 1
         
-        # If no errors this will overright the -1 to validate
+        # If no errors this will overwrite the -1 to validate
         # the form's data.
         self.__c_errors = c_errors
+        
+    def __clear_events(self):
+        
+        for name, field in self.__iter_fields():
+            field.on_change.clear()
+            field.on_error.clear()
         
     def clear_saved(self):
         """

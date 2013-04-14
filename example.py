@@ -43,6 +43,7 @@ URLS = Urls(
     
     url(r'^$','example_views.Home'),
     url(r'^upload/$','example_views.Upload'),
+    url(r'^username/$','example_views.Username'),
 )
 
 # Wrappers are simplar to django middleware. They extend

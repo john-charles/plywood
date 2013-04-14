@@ -123,6 +123,11 @@ class Request:
         return self.__csrf_token
     
     @property
+    def csrf_token_field(self):        
+        field = """<input type="hidden" name="csrf_token" value="%s">"""
+        return field % self.csrf_token
+    
+    @property
     def headers(self):
         return self.__headers
     

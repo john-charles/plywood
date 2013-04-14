@@ -41,3 +41,9 @@ class Event:
     def __call__(self, *args, **kw):
         for call in self.call_list:
             call(*args, **kw)
+            
+    def __str__(self):
+        return "<Event%s>" % self.call_list
+    
+    def clear(self):        
+        self.call_list = list()
