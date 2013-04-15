@@ -122,7 +122,7 @@ class WSGIHandler:
                 print response.exception.traceback_text
                 
         
-        response_callback(response.GetStatus(), response.GetHeaders())
-        return response.GetBody()
+        response_callback(response.get_status(), response.get_headers())
+        return response.get_body()
 
         

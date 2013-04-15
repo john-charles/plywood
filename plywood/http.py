@@ -239,7 +239,7 @@ class Response:
     
     def __init__(self, request):
         self.__cookies = CookieList()
-        self.headers = dict()
+        self._headers = dict()
         self.request = request
     
     @property
@@ -250,33 +250,32 @@ class Response:
         self.cookies.set_cookie(name, value, path, "", domain, expires, secure, None, httponly)
     
     
-    def SetHeader(self, name, value):
-        self.headers[name] = value
+    def set_header(self, name, value):
+        self._headers[name] = value
         
             
-    def GetHeader(self, name):
-        return self.headers[name]
+    def get_header(self, name):
+        return self._headers[name]
     
-    def Headers(self):
-        return self.headers.keys()
+    @property
+    def headers(self):
+        return self._headers
     
-    def GetHeaders(self):
+    def get_headers(self):
         
         headers = [(name, value) for name, value in self.headers.iteritems()]
         headers.extend([('Set-Cookie', cookie.OutputString()) for cookie in self.cookies])
         
-        #print headers
-        
         return headers
     
-    def GetBody(self):
-        raise NotImplemented("GetBody must be implemented by inheriting response type!")
+    def get_body(self):
+        raise Exception("get_body must be implemented by inheriting response type!")
     
-    def GetRequest(self):
+    def get_request(self):
         return self.request
     
-    def GetStatus(self):
-        raise NotImplemented("GetStatus must be implemented by inheriting response type!")
+    def get_status(self):
+        raise Exception("get_status must be implemented by inheriting response type!")
     
     
 class PageResponse(Response):
@@ -285,10 +284,10 @@ class PageResponse(Response):
         Response.__init__(self, request)
         self.page = page.encode("utf-8") if isinstance(page, unicode) else str(page)
         
-    def GetBody(self):
+    def get_body(self):
         return [self.page]
     
-    def GetStatus(self):
+    def get_status(self):
         return "200 OK"
     
 class RedirectResponse(Response):
@@ -297,10 +296,10 @@ class RedirectResponse(Response):
         Response.__init__(self, request)
         self.SetHeader("Location", redirect_url)
         
-    def GetBody(self):
+    def get_body(self):
         return []
     
-    def GetStatus(self):
+    def get_status(self):
         # TODO: This should check the request, if the request
         #   does not come from a modern browser it should send
         #   a 302, rather than a 303.
@@ -326,7 +325,7 @@ class PermanentRedirectResponse(RedirectResponse):
     def __init__(self, request, redirect_url):
         RedirectResponse.__init__(self, request, redirect_url)
         
-    def GetStatus(self):
+    def get_status(self):
         return "301 Moved Permanently"
     
 class StreamResponse(Response):
@@ -339,10 +338,10 @@ class StreamResponse(Response):
         else:
             self.SetHeader("Content-Type", "text/css")
         
-    def GetBody(self):
+    def get_body(self):
         return self.resp_iterable
     
-    def GetStatus(self):
+    def get_status(self):
         return "200 OK"
     
 class NotFoundResponse(PageResponse):
@@ -350,7 +349,7 @@ class NotFoundResponse(PageResponse):
     def __init__(self, request, page):
         PageResponse.__init__(self, request, page)
         
-    def GetStatus(self):
+    def get_status(self):
         return "404 Not Found"
     
 class PermissionDeniedResponse(PageResponse):
@@ -358,7 +357,7 @@ class PermissionDeniedResponse(PageResponse):
     def __init__(self, request, page):
         PageResponse.__init__(self, request, page)
         
-    def GetStatus(self):
+    def get_status(self):
         return "403 Forbidden"
         
         
@@ -367,7 +366,7 @@ class HeadResponse(Response):
     def __init__(self, request):
         Response.__init__(self, request)
         
-    def GetBody(self):
+    def get_body(self):
         return []
     
 class NotModifiedResponse(HeadResponse):
@@ -375,7 +374,7 @@ class NotModifiedResponse(HeadResponse):
     def __init__(self, request):
         HeadResponse.__init__(self, request)
         
-    def GetStatus(self):
+    def get_status(self):
         return "304 Not Modified"
     
 class ServerErrorResponse(PageResponse):
@@ -384,8 +383,8 @@ class ServerErrorResponse(PageResponse):
         PageResponse.__init__(self, request, exc.ToHTML().strip())
         self.exception = exc
         
-    def GetStatus(self):
-        return self.exception.GetStatus()
+    def get_status(self):
+        return self.exception.get_status()
     
 class JsonResponse(PageResponse):
     
