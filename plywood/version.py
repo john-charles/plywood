@@ -18,6 +18,6 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
-from version import __version__    
-    
-    
+# NOTE: This file should only contain this one line which defines a string
+#   version name.
+__version__ = "1.0 RC 1"

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This file is part of plywood.
     
@@ -18,6 +19,19 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
-from version import __version__    
-    
-    
+execfile("plywood/version.py")
+
+from distutils.core import setup
+
+setup(
+    name='Plywood',
+    version=__version__,
+    description='A lightweight WSGI Web Framework',
+    long_description='''Plywood is a WSGI Web Framework
+    built to be database and template agnostic.''',
+    author='John-Charles D. Sokolow',
+    author_email='john.charles.sokolow@gmail.com',
+    url='',
+    packages=['plywood', 'plywood.forms'],
+    license='GNU Lesser General Public License', 
+)
