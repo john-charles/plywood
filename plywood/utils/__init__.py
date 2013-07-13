@@ -22,8 +22,10 @@ __all__ = ['dev_server','static_files']
 
 import hashlib
 from os.path import join, exists
-from exceptions import Server404Exception
+from plywood.exceptions import Server404Exception
 from plywood import __version__
+
+from reloader import run_method
 
 def quick_hash( *args ):
 
@@ -35,30 +37,34 @@ def quick_hash( *args ):
     return sha.hexdigest()
 
         
-def dev_server(application, bindhost='localhost', bindport=8051):
+def dev_server(application, bindhost='localhost', bindport=8050):
     
     from wsgiref.simple_server import make_server
     
-    httpd = make_server(bindhost, bindport, application)
-    
-    print """Plywood Copyright (C) 2013  John-Charles D. Sokolow
-    This program comes with ABSOLUTELY NO WARRANTY; 
-    for details see COPYING and COPYING.LESSER distributed
-    with this library or visit <http://www.gnu.org/licenses/>
-    """
-    
-    info = (__version__, bindhost, bindport)
-    print "Plywood version '%s' listening on http://%s:%s/" % info
-    print "Press 'Ctrl+C' to quit!" 
-    
-    try:
-        while True:
-            httpd.handle_request()
-    
-    except KeyboardInterrupt:        
-        print "\nShutting down..."
+    def server_loop():
         
-    return True
+        httpd = make_server(bindhost, bindport, application)
+        
+        print """Plywood Copyright (C) 2013  John-Charles D. Sokolow
+        This program comes with ABSOLUTELY NO WARRANTY; 
+        for details see COPYING and COPYING.LESSER distributed
+        with this library or visit <http://www.gnu.org/licenses/>
+        """
+        
+        info = (__version__, bindhost, bindport)
+        print "Plywood version '%s' listening on http://%s:%s/" % info
+        print "Press 'Ctrl+C' to quit!" 
+    
+        try:
+            while True:
+                httpd.handle_request()
+        
+        except KeyboardInterrupt:        
+            print "\nShutting down..."
+    
+    # This puts the server loop into a subprocess and
+    # starts the reloader thread!
+    run_method(server_loop)
         
         
 

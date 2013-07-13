@@ -34,6 +34,7 @@ PAGE = '''
 '''
 
 class Home(View):
+    
     """
     Views are classes that extend the 'plywood.views.View' type.
     To make a view implement the __call__ method. All arguments
@@ -41,7 +42,6 @@ class Home(View):
     will be passed into __call__ as keyword arguments.
     """   
     def __call__(self):
-        
         # Demonstrates the session Wrapper functionality.
         # SessionWrappers are standard and implement the
         # 'abstract' (python has very limited tools for abstraction
@@ -174,8 +174,6 @@ class Username(Form):
     
     
 
-            
-        
         
         
     
