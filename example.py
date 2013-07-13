@@ -58,13 +58,21 @@ WRAPPERS = WList(
     
 )
 
+# Let's create our application instance. This application
+# is what handles the wsgi requests. And it can be deployed
+# to anything that supports wsgi. Including wsgi, mod_wsgi
+# fastcgi, fcgi, and even cgi!
+application = WSGIHandler(URLS, WRAPPERS, OPTIONS)
+
 if __name__ == "__main__":
     
     # Deployment of your WSGIHandler will be server specific
     # but for the example herin we simply use the builtin
-    # wsgi server which comes with python. The 'dev_server'
-    # function is a convienience function.
-    application = WSGIHandler(URLS, WRAPPERS, OPTIONS)
+    # wsgi server which comes with plywood. The 'dev_server'
+    # will serve your application on local host, and has 
+    # some convienient features, including the ability to
+    # automatically reload your application when any of 
+    # your source files change. This is handy!    
     dev_server(application, bindport=8052)
     
     
