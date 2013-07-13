@@ -79,6 +79,8 @@ class Upload(View):
         # this property will return true when the request is 
         # a form submission.
         if self.request.is_post:
+            print self.request.content_type
+            print self.request.post
             my_file = self.request.post['my_file']
             ds_file = open("file.jpg",'wb')
             shutil.copyfileobj(my_file, ds_file)

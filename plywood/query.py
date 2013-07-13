@@ -19,7 +19,7 @@ This file is part of plywood.
 Please see README for usage details.   
 """
 __all__ = ['Query']
-import tempfile, string
+import tempfile, string, json
 
 from kinds import *
 from collections import deque
@@ -81,11 +81,14 @@ class Query(dict):
         elif content_type == "application/x-www-form-urlencoded":
             self.__init_urlencoded(input_source, content_length)
         elif content_type.startswith("multipart/form-data"):
+            print "decoding with multipart form-data"
             self.__init_multipart(input_source, content_type, content_length)
+        elif content_type.startswith("application/json"):
+            self.__init__json(input_source, content_type, content_length)
         
         
     def __init_urlencoded(self, reader, length=None):
-        
+        """This process data as urlencoded"""
         if length > 1024:
             raise Server413Exception("The request was too big","")
         
@@ -203,7 +206,8 @@ class Query(dict):
             return cattrs['name'], data_content
         
     def __init_multipart(self, reader, ctype, length):
-                
+        """This parses one of the most annoying formats ever concieved!
+            multipart form data!"""
         boundary = self.__get_boundry(ctype)        
         
         local_file = self.__copy_to_temp(reader, length)        
@@ -256,6 +260,10 @@ class Query(dict):
             
         local_file.seek(0)
         return local_file
+    
+    def __init__json(self, reader, c_type, length):        
+        json_data = reader(length)
+        self.update(json.loads(json_data))
     
     def get(self, name, default=None, inset=None, istype=None, inrange=None, shorter_than=None, plaintext=False):
         

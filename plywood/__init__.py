@@ -18,6 +18,6 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
-from version import __version__    
+from version import __version__
     
     

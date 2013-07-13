@@ -49,7 +49,7 @@ class ServerException(Exception):
         self.reason = reason
         self.status = status
         
-    def GetStatus(self):
+    def get_status(self):
         return self.status
         
     def ToHTML(self):

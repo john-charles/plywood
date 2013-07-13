@@ -132,12 +132,24 @@ class Request:
         return self.__headers
     
     @property
+    def is_head(self):
+        return self.method == "HEAD"
+    
+    @property
     def is_get(self):
         return self.method == "GET"
     
     @property
     def is_post(self):
         return self.method == "POST"
+    
+    @property
+    def is_put(self):
+        return self.method == "PUT"
+    
+    @property
+    def is_delete(self):
+        return self.method == "DELETE"
     
     @property
     def method(self):
@@ -176,21 +188,44 @@ class Request:
                 self.content_type, self.content_length)
             
         return self.__reader_result
+    
+    def __get_request_csrf_token(self, post_data):
+        if 'X-CSRFTOKEN' in self.headers:
+            return self.headers['X-CSRFTOKEN']
+        else:
+            return post_data.get('csrf_token', "")
         
-    @property
-    def post(self):
+    def __get_put_or_post(self):
         
-        if self.is_post:
-            post_data = self.__loadreader()
+        if self.is_post or self.is_put:            
+            client_data = self.__loadreader()
             
-            if post_data['csrf_token'] != self.csrf_token:
+            if self.__get_request_csrf_token(client_data) != self.csrf_token:
                 raise Server403Exception("Invalid CSRF Token", self.path_info)
             
-            return post_data
+            return client_data
         
         else:
             return Query(query_dict=dict())
         
+        
+    @property
+    def post(self):      
+        if not self.is_post:
+            raise AttributeError("Post data is not available for '%s' method" % self.method)
+        return self.__get_put_or_post()
+    
+    @property
+    def put(self):
+        if not self.is_get:
+            raise AttributeError("Put data is not available for '%s' method" % self.method)
+        return self.__get_put_or_post()
+    
+    @property
+    def delete(self):
+        if not self.is_delete:
+            raise AttributeError("Delete data is not available for '%s' method" % self.method)
+        return self.__get_put_or_post()
     
     @property
     def query(self):
