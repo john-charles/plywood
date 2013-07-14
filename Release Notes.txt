@@ -1,0 +1,54 @@
+Version 1.1:
+
+    This is an update to version 1.
+    
+    New features include:
+        
+        - Ajax support, in the csrf protection system, using either the 
+            X-CSRFTOKEN header, or includeing the csrf token in the root
+            of the json object sent to the server from a client side ajax
+            request.
+            
+        - The request.put and request.post properties have been updated
+            to support json being sent from the client!
+            
+        - The multipart/form-data parser has been updated to be more efficient
+            and to traverse the date fewer times.
+            
+    Bugs fixed include:
+        
+        - Sending multipart/form-data which was broken is now fixed!
+    
+Version 1:
+    
+    This is the second version. This project has been seriously refactored.
+    The core url processing code remains the same however!
+    
+    New features include:
+    
+        - The addition of a 'Wrappers' api, which behaves like django's middleware.
+        - The addition of a 'Sessions' api, and the implementation of two simple session
+            managers, MemorySessionWrapper, and CookieSessionWrapper. 
+            
+            As always, security was a concern taken seriously, the CookieSessionWrapper
+            uses the "secret_key" to sign all cookie data. While this does not provide
+            privacy, the client can view the cookie contents, it does provide a
+            guarantee of authenticity of data stored in a cookie session!
+            
+        - This version also removes the @view decorator, which seemed redundant
+            and introduces class based views, a view can extend plywood.views.View
+            and implement the __call__(self). 
+            
+        - Inspired by the ASP.NET C# Framework, mixed with the Django forms
+            validation framework this version also introduces the concept of
+            View based forms which behave both like django forms and like
+            asp forms. 
+
+Version 0:
+
+    This is the initial version of the Plywood Web Framework for Python.
+    It's features include:
+    
+        - WSGI Support
+        - A Url Mapping framework
+        - A request object which is passed into views, which are functions decorated by @view.

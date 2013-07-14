@@ -1,0 +1,10 @@
+This is a list of features to include in the future.
+
+As features are included here, they will be removed and described in more detail
+    in the release notes!
+    
+- A plywood aware extension to the unittest suite or unittest2 suite.
+- Declerative view classes which behave like Java Spring controllers,
+    eg: they can declare the methods get, post, put, delete, etc...
+    and even declare multiples of each and allow the appropriate one
+    to be called based on url parameters, and named captured groups!
