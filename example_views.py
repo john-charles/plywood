@@ -79,8 +79,6 @@ class Upload(View):
         # this property will return true when the request is 
         # a form submission.
         if self.request.is_post:
-            print self.request.content_type
-            print self.request.post
             my_file = self.request.post['my_file']
             ds_file = open("file.dat",'wb')
             shutil.copyfileobj(my_file[0], ds_file)
@@ -92,6 +90,7 @@ class Upload(View):
             <input type="file" name="my_file">
             <input type="submit" value="Upload">
         </form>
+        <img src="/_/file.dat">
         <a href="/">Back</a>
         ''' % self.request.csrf_token
         

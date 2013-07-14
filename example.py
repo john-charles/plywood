@@ -19,6 +19,9 @@ This file is part of plywood.
     
 Please see README for usage details.   
 """
+
+from os.path import dirname
+
 from plywood.urls import Urls, url
 from plywood.wsgi import WSGIHandler
 from plywood.utils import dev_server
@@ -42,6 +45,7 @@ You should change this to something more secure in your application."""}
 URLS = Urls(
     
     url(r'^$','example_views.Home'),
+    url(r'^_/(?P<path>.*)$','plywood.views.static_files', directory_list=dirname(__file__)),
     url(r'^upload/$','example_views.Upload'),
     url(r'^username/$','example_views.Username'),
 )

@@ -333,7 +333,7 @@ class RedirectResponse(Response):
     
     def __init__(self, request, redirect_url):
         Response.__init__(self, request)
-        self.SetHeader("Location", redirect_url)
+        self.set_header("Location", redirect_url)
         
     def get_body(self):
         return []
@@ -373,9 +373,9 @@ class StreamResponse(Response):
         Response.__init__(self, request)
         self.resp_iterable = resp_iterable
         if content_type:
-            self.SetHeader("Content-Type", content_type)
+            self.set_header("Content-Type", content_type)
         else:
-            self.SetHeader("Content-Type", "text/css")
+            self.set_header("Content-Type", "text/css")
         
     def get_body(self):
         return self.resp_iterable
