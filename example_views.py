@@ -82,8 +82,8 @@ class Upload(View):
             print self.request.content_type
             print self.request.post
             my_file = self.request.post['my_file']
-            ds_file = open("file.jpg",'wb')
-            shutil.copyfileobj(my_file, ds_file)
+            ds_file = open("file.dat",'wb')
+            shutil.copyfileobj(my_file[0], ds_file)
             ds_file.close()
             
         page = '''

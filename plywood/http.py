@@ -42,6 +42,7 @@ class Request:
     def __init__(self,environ):
         self.environ = environ
         self.__content_read = 0
+        self.__wsgi_input = None
         self.__headers = self.__process_headers()
         self.__cookies = self.__process_cookies()
         self.__secret_key = environ['options']['secret_key']
@@ -159,25 +160,28 @@ class Request:
     def path_info(self):
         return self.environ.get("PATH_INFO","")
     
+    def __read_one(self):
+        
+        if self.__wsgi_input == None:
+            self.__wsgi_input = self.environ['wsgi.input']
+            
+        if self.__content_read < self.content_length:
+            self.__content_read += 1
+            return self.__wsgi_input.read(1)
+        else:
+            return ""
+    
     def __reader(self, length=None):
         
-        if length == None: length = self.content_length
+        buff = ""
+        while len(buff) < length:
+            ch = self.__read_one()
+            if not ch: break
+            buff += ch
+            
+        return buff
         
-        max_length = self.content_length
-        max_left = max_length - self.__content_read
         
-        if max_left > 0:
-            if max_left > length:
-                actual_read = length
-            else:
-                actual_read = max_left
-                
-            reader = self.environ.get('wsgi.input')
-            buff = reader.read(actual_read)
-            self.__content_read = self.__content_read + actual_read
-            return buff
-        else:
-            return ''        
         
     def __loadreader(self):
         # For some reason this is getting called
