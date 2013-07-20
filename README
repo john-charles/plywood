@@ -21,36 +21,34 @@ What is 'plywood'?
     plywood is a minimalist web framework written in python. Its goal is to
     provide an abstraction over the WSGI interface specification and limited
     other web tools. It is deliberatly designed to not include any database
-    or template rendering code. plywood let's you handle web requests, both
-    post and get, upload and stream files and provides basic csrf protections.
+    or template rendering code. plywood let's you handle web requests, upload
+    and stream files and provides basic csrf protections.
     
 Why did I create 'plywood'?
     
-    I created plywood because I was becoming tired of Django and its
-    monolithic nature. I wanted to use sql alchemy or other ORM solutions
-    for my databse managment and I wanted to use Jinja2 or other template
-    languages for rendering my html. This left me with still needing to use
-    Django, and install all of it's dependencies.
+    I created plywood because I was becoming tired of Django's monolithic
+    nature. I wanted to use sql alchemy or other ORM solutions for my
+    databse managment and I wanted to use Jinja2 or other template languages
+    for html rendering. But using Django for this purpouse meant installing
+    the full django framework, all its dependencies, and hacking its
+    settings.
     
-    The goal of plywood is to mimic parts of django where they pretain to
+    The goal of plywood is to mimic parts of Django where they pretain to
     request handling but not restrict the user to any particular template
-    engine or ORM. As this library developed it was also influenced by some
-    of the concepts found in other frameworks which handle forms.
+    engine or ORM. 
     
 Why should I use 'plywood'?
     
-    Plywood is a full featured WSGI abstraction. It is also pure python
-    and has no dependencies outside of the python standard library. Plywood
+    plywood is a full featured WSGI abstraction. It is also pure python
+    and has no dependencies outside of the python standard library. plywood
     is exceptionally lightweight and very small with an install footprint of
-    less than 120KB. Plywood is also fast as I developed it on an old laptop
-    and spent lots of time figuring out what seemed to waste time and make a
-    cleaner version of that. 
+    less than 120KB.
     
 How do I use 'plywood'?
     
-    A simple implementation of a plywood site comes with this package.
-    The files example.py and example_views.py are a working standalone
-    test website which should be enough to get you started.
+    A simple implementation of a plywood site is included with this
+    package. The files example.py and example_views.py are a working,
+    standalone, website which can help you to get started.
     
 How do I submit a bug?
     
