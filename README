@@ -18,7 +18,7 @@ This file is part of plywood.
     
 What is 'plywood'?
     
-    plywood is a minimalist web framework written in python. Its goal is to
+    plywood is a minimalist web framework written in Python. Its goal is to
     provide an abstraction over the WSGI interface specification and limited
     other web tools. plywood let's you handle web requests, upload and stream
     files and provides basic csrf protections. But leaves the choice the
@@ -39,8 +39,8 @@ Why did I create 'plywood'?
     
 Why should I use 'plywood'?
     
-    plywood is a full featured WSGI abstraction. It is also pure python
-    and has no dependencies outside of the python standard library. plywood
+    plywood is a full featured WSGI abstraction. It is also pure Python
+    and has no dependencies outside of the Python standard library. plywood
     is exceptionally lightweight and very small with an install footprint of
     less than 120KB.
     
