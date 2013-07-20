@@ -20,9 +20,9 @@ What is 'plywood'?
     
     plywood is a minimalist web framework written in python. Its goal is to
     provide an abstraction over the WSGI interface specification and limited
-    other web tools. It is deliberatly designed to not include any database
-    or template rendering code. plywood let's you handle web requests, upload
-    and stream files and provides basic csrf protections.
+    other web tools. plywood let's you handle web requests, upload and stream
+    files and provides basic csrf protections. But leaves the choice the
+    ORM and template engine choices up to you.
     
 Why did I create 'plywood'?
     
