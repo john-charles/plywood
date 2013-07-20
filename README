@@ -21,16 +21,16 @@ What is 'plywood'?
     plywood is a minimalist web framework written in Python. Its goal is to
     provide an abstraction over the WSGI interface specification and limited
     other web tools. plywood lets you handle web requests, upload and stream
-    files and provides basic csrf protections; but leaves the choice the
-    ORM and template engine choices up to you.
+    files and provides basic csrf protections; but leaves the choice of
+    ORM and template engine up to you.
     
 Why did I create 'plywood'?
     
     I created plywood because I was becoming tired of Django's monolithic
-    nature. I wanted to use sql alchemy or other ORM solutions for my
-    databse managment and I wanted to use Jinja2 or other template languages
-    for html rendering. But using Django for this purpouse meant installing
-    the full django framework, all its dependencies, and hacking its
+    nature. I wanted to use SQL Alchemy or other ORM solutions for my
+    databse managment; I wanted to use Jinja2 or other template languages
+    for html rendering. Using Django for this purpouse meant installing
+    the full Django framework with all its dependencies and hacking its
     settings.
     
     The goal of plywood is to mimic parts of Django where they pretain to
@@ -48,7 +48,7 @@ How do I use 'plywood'?
     
     A simple implementation of a plywood site is included with this
     package. The files example.py and example_views.py are a working,
-    standalone, website which can help you to get started.
+    standalone website which can help you to get started.
     
 How do I submit a bug?
     

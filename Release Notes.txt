@@ -1,19 +1,19 @@
 Version 1.1:
 
-    This is an update to version 1.
+    This is an update to version 1.0
     
     New features include:
         
-        - Ajax support, in the csrf protection system, using either the 
-            X-CSRFTOKEN header, or includeing the csrf token in the root
-            of the json object sent to the server from a client side ajax
-            request.
+        - Improved Ajax support in the csrf protection system. Ajax requests
+            are now supported by using either the X-CSRFTOKEN header, or 
+            including the csrf token in the root of the json object sent to
+            the server from the client
             
         - The request.put and request.post properties have been updated
-            to support json being sent from the client!
+            to support json being sent from the client
             
         - The multipart/form-data parser has been updated to be more efficient
-            and to traverse the date fewer times.
+            and to traverse the date fewer times
             
     Bugs fixed include:
         
@@ -26,29 +26,29 @@ Version 1:
     
     New features include:
     
-        - The addition of a 'Wrappers' api, which behaves like django's middleware.
+        - The addition of a 'Wrappers' api, which behaves like Django's middleware
         - The addition of a 'Sessions' api, and the implementation of two simple session
-            managers, MemorySessionWrapper, and CookieSessionWrapper. 
+            managers, MemorySessionWrapper, and CookieSessionWrapper 
             
-            As always, security was a concern taken seriously, the CookieSessionWrapper
+            As always, security was a concern taken seriously. The CookieSessionWrapper
             uses the "secret_key" to sign all cookie data. While this does not provide
-            privacy, the client can view the cookie contents, it does provide a
+            privacy, the client can view the cookie contents; it DOES provide a
             guarantee of authenticity of data stored in a cookie session!
             
         - This version also removes the @view decorator, which seemed redundant
-            and introduces class based views, a view can extend plywood.views.View
-            and implement the __call__(self). 
+            and introduces class based views-- a view can now be implemented by
+            extending plywood.views.View and implementing the __call__(self) method 
             
         - Inspired by the ASP.NET C# Framework, mixed with the Django forms
-            validation framework this version also introduces the concept of
-            View based forms which behave both like django forms and like
-            asp forms. 
+            validation framework, this version also introduces the concept of
+            View based forms which behave both like Django forms and like
+            ASP forms. 
 
 Version 0:
 
-    This is the initial version of the Plywood Web Framework for Python.
-    It's features include:
+    This is the initial version of the plywood web framework for Python.
+    Its features include:
     
         - WSGI Support
         - A Url Mapping framework
-        - A request object which is passed into views, which are functions decorated by @view.
+        - A request object which is passed into views, which are functions decorated by @view
