@@ -50,7 +50,6 @@ def import_entity(name):
                 m = getattr(m, part)
             else:
                 raise ImportError("No object %s" % name)
-        
         return m
 
 

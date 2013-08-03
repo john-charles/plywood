@@ -53,22 +53,31 @@ def include(urllist_name):
 def Urls(*urllist):
     # Adds support for the django style first arg is a 
     # namespace prefix, to plywood urllists.
-    if len(urllist) > 0:
+    if isinstance(urllist, (list, tuple)):
         
+        # Apply the namespace to all calls!
         if isinstance(urllist[0], basestring):
+            
+            # Fetch the namespace argument.
             namespace = urllist[0]
             new_urllist = list()
             
-            # Since we have a namespace prefix we can now
-            #   apply it to all calls represented as strings.
             for pattern, call, kwargs in urllist[1:]:
                 if isinstance(call, basestring):
                     call = ".".join((namespace, call))
+                    
                 new_urllist.append((pattern, call, kwargs))
             
-            urllist = tuple(new_urllist)
-    
-    return include(urllist)
+            urllist = new_urllist
+        
+        def import_if_needed(pattern, call, kwargs):
+            if isinstance(call, basestring):
+                call = import_entity(call)
+            return (pattern, call, kwargs)
+        
+        return tuple([import_if_needed(*x) for x in urllist])
+        
+    return urllist
 
 
 class URLDispatcher:
