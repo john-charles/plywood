@@ -42,7 +42,7 @@ def url( pattern, call, **kwargs ):
 #   inline include, or a text based/import include.
 def include(urllist_name):
     
-    if isinstance(urllist_name, str):
+    if isinstance(urllist_name, basestring):
         urllist = import_entity(urllist_name)
         return Urls(*urllist)
     elif isinstance(urllist_name, tuple):

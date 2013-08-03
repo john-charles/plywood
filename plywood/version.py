@@ -19,5 +19,10 @@ This file is part of plywood.
 Please see README for usage details.   
 """
 # NOTE: This file should only contain this one line which defines a string
-#   version name.
+#   version name. 
+#   The version string represents, <revolution>.<evolution>.<bugfix>
+#   Revolution is the api version, from revolution 0 to 1 api compatability
+#   is broken. Evolution from evolution 0 to 1 a feature is added but backwards
+#   compatability is mantained. From bugfix 1 to 2 no new features are added,
+#   the api should remain exactly the same, just be faster and better!
 __version__ = "1.1.2"
