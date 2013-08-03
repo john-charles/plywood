@@ -32,6 +32,6 @@ setup(
     author='John-Charles D. Sokolow',
     author_email='john.charles.sokolow@gmail.com',
     url='',
-    packages=['plywood', 'plywood.forms'],
+    packages=['plywood', 'plywood.forms', 'plywood.utils'],
     license='GNU Lesser General Public License', 
 )
