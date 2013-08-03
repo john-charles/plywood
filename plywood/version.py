@@ -20,4 +20,4 @@ Please see README for usage details.
 """
 # NOTE: This file should only contain this one line which defines a string
 #   version name.
-__version__ = "1.1.1"
+__version__ = "1.1.2"

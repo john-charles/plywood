@@ -35,40 +35,35 @@ from imputil import import_entity
 #   the url into the proper set of re, call, kwargs.
 #
 def url( pattern, call, **kwargs ):   
-    if isinstance(call, str):
-        call = import_entity(call)
-    
-    if not callable(call):
-        if not isinstance(call, tuple):
-            raise TypeError("A function, or callable class is required!")
-    
     return (re.compile( pattern ), call, kwargs)
 
     
 # This will include a urls list, this can do an
 #   inline include, or a text based/import include.
 def include(urllist_name):
+    
     if isinstance(urllist_name, str):
-        return import_entity(urllist_name)
+        urllist = import_entity(urllist_name)
+        return Urls(*urllist)
     elif isinstance(urllist_name, tuple):
         return urllist_name
     else:
         raise TypeError("A tuple is expected!")
     
 def Urls(*urllist):
-    
     # Adds support for the django style first arg is a 
     # namespace prefix, to plywood urllists.
     if len(urllist) > 0:
-        if isinstance(urllist[0], (str, unicode)):
+        
+        if isinstance(urllist[0], basestring):
             namespace = urllist[0]
             new_urllist = list()
             
             # Since we have a namespace prefix we can now
             #   apply it to all calls represented as strings.
             for pattern, call, kwargs in urllist[1:]:
-                if isinstance(call, str):
-                    call = ".".join(namespace, call)
+                if isinstance(call, basestring):
+                    call = ".".join((namespace, call))
                 new_urllist.append((pattern, call, kwargs))
             
             urllist = tuple(new_urllist)

@@ -21,7 +21,7 @@ Please see README for usage details.
 import traceback, sys
 
 def import_entity(name):
-    
+        
     # This is one of the most frustrating pieces of code to write...
     path = None
     
@@ -38,6 +38,8 @@ def import_entity(name):
                 sys.exit(1)
     
     if name.count(".") == 0:
+        if 'm' not in locals():
+            raise ImportError("Could not import '%s'" % name)
         return m
     
     else:
