@@ -221,7 +221,7 @@ class Request:
     
     @property
     def put(self):
-        if not self.is_get:
+        if not self.is_put:
             raise AttributeError("Put data is not available for '%s' method" % self.method)
         return self.__get_put_or_post()
     
